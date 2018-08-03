@@ -1,0 +1,29 @@
+import random
+import randomWalk
+
+def getList(stn):
+    lists = stn.values()
+    final_set = set(lists[0])
+    for list in lists[1:]:
+    for ineq in list:
+	    final_set.add(ineq)
+    return list(final_set)
+
+def inLiSTN(stn, p):
+	for ineq in stn:
+        start = ineq[0]
+        end = ineq[1]
+        constr = ineq[2]
+        if p[end] - p[start] > constr:
+            return False
+    return True
+
+def randomMelt(stn, p):
+	ineqList = getList(stn)
+	count = 0
+	while True:
+	    rand = random.randint(0,len(ineqList))
+        ineqList[rand][2] -= 1
+        count += 1
+        if not inLiSTN(ineqList, p):
+        	return count

@@ -1,0 +1,24 @@
+Possible Dispatch Approximations
+
+- Individual events can happen earlier than expected, but time itself only moves forward, solution space shrinking
+
+- early first, maximize solution space flexibility, but individual schedule flexibility and number of reschedules would be bad
+
+- Every second recompute center
+
+- Only reschedule when schedule is outside of boundary
+
+- perhaps plot number of reschedules vs randomWalk lengths
+- Best schedules would have fewest number of reschedules, remain valid for the longest time
+- if we factor in random walk, recomputing center is more desirable for individual schedule flexibility 
+
+
+Possible approximations for STNs?
+
+- SREA: just pick one schedule and stick with it, see how many times it can be valid before falling out of constraints
+
+- DREA: recompute the center every time
+
+- SI: recompute center if randomWalk length for the center is x% greater than current schedule's randomWalk length
+
+- AR: reschedule only when randomWalk length reaches some small value

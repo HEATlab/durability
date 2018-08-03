@@ -1,0 +1,131 @@
+=============================================================================================================
+INTRODUCTION/MOTIVATION:
+=============================================================================================================
+
+- good real life example
+
+When carrying out a set of tasks, an autonomous agent is likely to face unforeseen disturbances. A 
+self-driving car's daily driving schedule cannot always predict delays caused by bad weather or even early 
+arrivals due to low traffic. Thus, the ability to prepare schedules that are flexible - schedules that remain 
+valid even when faced with disruptions - is a desirable property for an autonomous agent. Furthermore, if a 
+schedule completes all the required objectives in time even after the disturbance, the agent can avoid the 
+burden of rescheduling altogether.
+
+Previous work has examined the notion of flexibility with respect to scheduling problems. Various metrics of 
+flexibility have been constructed using the time intervals that constrain events relative to each other in a 
+scheduling problem, including using geometric interpretations of these constraints. While these metrics are 
+useful in classifying different solution spaces, they do not provide information about particular schedules 
+within a given problem.
+
+In this paper, we model the idea of random disturbances in the form of a "random walk" that allows us to 
+empirically evaluate the flexibility of solutions to scheduling problems, basing ourselves on the geometric 
+interpretation of STNs discussed in Huang et al. We also examine what happens when the constraints of a 
+scheduling problem get tighter over time, which views disturbances from the perspective of the network itself, 
+rather than from a schedule inside the network. These methods of empirical testing serve the purposes of 
+a) helping us form a notion of an "optimal schedule" for a problem and b) validating some metrics over others 
+when trying to calculate the overall flexibility of a network. 
+
+=============================================================================================================
+BACKGROUND: 
+=============================================================================================================
+
+- what STNs are
+- existing metrics of flexibility (can be simple versions)
+	- naive
+	- Hunsberger
+	- Wilson
+- idea of viewing STNs as geometric polytopes
+- new spherical metric 
+
+=============================================================================================================
+OPTIMAL SCHEDULES: 
+=============================================================================================================
+
+The Huang et. al paper defined flexibility as the "room within a schedule [...] to reschedule wihout violating 
+the overall time constraints in the case of unexpected opportunities or disruptions". We use a similar 
+definition for flexibility, and examine what flexibility means for individual points inside the solution 
+spaces of STNs. It seems intuitive that a point that has the most room available for disturbance with respect 
+to each constraint, a point that is the farthest away from all boundaries from the geometric solution space of 
+an STN, should be the most optimal schedule. Though that criterion may sound simple, there are actually 
+multiple points that satisfy it.
+- define disturbances
+
+Chebyshev Center:
+Building off of Murty's LP, the same linear program that computes the spherical metric for an STN also 
+returns the center of the largest inscribed sphere. We will refer to this point for the rest of this paper 
+as the Chebyshev center. Although the Chebyshev center for an n-dimensional polytope can refer to both the 
+center of the largest inscribed sphere of a polytope and the center of the smallest circumscribed sphere, we 
+will use the inscribed sphere definition. 
+
+This schedule could be considered optimal for the reason that it maximizes the distance from all boundaries. 
+In a sense, it optimizes for the worst case scenario since it is as far away from any boundary as possible. 
+- possibly insert LP here and explain how maximizes distance from all boundaries (Murty 2009)
+
+Centroid:
+While the Chebyshev center optimizes for the worst case scenario, another possible center, the centroid, 
+optimizes for the expected case scenario. The centroid is defined as the mean position of all the points in 
+an n-dimensional polytope, which in this case is the STN solution space. This point considers what 
+disturbances are expected to happen, rather than being overly pessimistic and only considering the worst case 
+scenario.
+
+Unfortunately, the true centroid is extremely difficult to compute (#P hard, cite source, etc. For now the 
+source is Shyan Akmal 2k18). As a naive approximation of the centroid, we took the average of 100 different 
+points.
+- 100 vs 200 randomly selected points, not much significant difference in the point
+
+Mystery point:
+- Nail down each timepoint but do so in order to maximize the volume/flexibility of the remaining n-1 
+dimensional polytope, and keep doing so until there are no more timepoints left to assign. 
+- possibly early first?
+- optimizing for ______
+
+=============================================================================================================
+OPTIMAL DISPATCH:
+=============================================================================================================
+
+- incorporate time moving forward
+- volume of valid STN shrinks, waves of concentric right angles
+- possibly always early first?
+
+=============================================================================================================
+EMPIRICAL EVALUATION:
+=============================================================================================================
+
+Random Walk:
+- pick a vector, move one unit in that direction
+- normal distribution sphere idea, (cite source. For now the source is Shyan Akmal 2k18)
+- count how many steps until reach boundary, take average
+- represents how much that one schedule could be perturbed before no longer being a valid solution
+
+Random Shave:
+- pick one random boundary, shrink it by one unit
+- keep doing so until original point no longer in the STN
+- represents changing constraints
+- boss suddenly wants something completed earlier than originally expected
+- could possibly also incorporate time moving forward, cutting off earlier solutions
+
+Testing Networks:
+- correlation of random walk vs different metrics
+- correlation of random shave vs different metrics?
+- could show table rather than all the graphs
+- possibly add in normalized versions of Hunsberger and Wilson
+
+Test Schedules: 
+- Random Walk
+	- Chebyshev margin of victory vs spherical
+	- Centroid margin of victory vs spherical
+	- Chebyshev vs centroid
+		- inconclusive
+	- Mystery point?
+- Random shave
+
+Optimal dispatch:
+- ________
+
+=============================================================================================================
+FUTURE WORK/DISCUSSION:
+=============================================================================================================
+
+- Better approximation of centroid
+- Metric to separate out Chebyshev vs centroid
+- Random walk itself as a metric for flexibility

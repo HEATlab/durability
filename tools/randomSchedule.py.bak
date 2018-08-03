@@ -1,0 +1,650 @@
+# This file contains functions that make use of random schedules
+# for different STNs
+# Authors: Viva Ojha and Joon Lee
+# Contact Info: vmojha@g.hmc.edu and joolee@g.hmc.edu
+
+import randomWalk
+import stnConverter
+import test
+import random
+import copy
+import math
+import time
+import numpy as np
+import json
+import metricFunctions
+import os
+import matplotlib.pyplot as plt
+
+# Function that tells us how far away the centroid and
+# the chebyshev center are
+def distMetric(S, dim):
+    one = randomWalk.chebyshev(S)[0]
+    realone = [coord - one[0] for coord in one[1:]]
+    cent = centroid(S)
+    return randomWalk.distance(realone, cent)
+
+# Convert our STN form to matrix form (required for use
+# of code in Polybots repository that we didn't write)
+# then call getRandomSchedule function from there
+def simpleRandSched(dict):
+    matrix_form = stnConverter.dictToMatrix(dict)
+    minimal_matrix = test.minimal(matrix_form)
+    # print minimal_matrix
+    return test.getRandomSchedule(minimal_matrix)
+
+# Same as above function but conversion is from robot brunch
+# stn format to matrix format
+def simpleRandSchedRBS(S):
+    matrix_form = stnConverter.listToMatrix(S)
+    minimal_matrix = test.minimal(matrix_form)
+    return test.getRandomSchedule(minimal_matrix)
+
+# Computes an approximation of the centroid by taking an 
+# avg of numPoints number of random schedules
+def centroid(ineqDict):
+    n = len(ineqDict.keys())
+    numPoints = 500
+    centroid = [0] * n
+
+    for i in range(numPoints):
+        p = simpleRandSched(ineqDict)
+        
+        for j in range(n):
+            centroid[j] += p[j]
+    
+    for i in range(n):
+        centroid[i] /= float(numPoints)
+        #centroid[i] += 0.5
+
+    return centroid
+
+# First convert robot brunch stn to our inequality 
+# format, then call the above centroid function
+def centroidRBS(S):
+    ineqDict = randomWalk.getInequal(S)
+    return centroid(ineqDict)
+
+# Computes the earliest possible start schedule by going
+# through the inequalities and setting each point
+# to its earliest possible value
+def earlyBird(ineqDict):
+    n = len(ineqDict.keys())
+    earlyPoint = [0] * n
+
+    matrix = stnConverter.dictToMatrix(ineqDict)
+    matrix = test.minimal(matrix)
+    ineqDict = stnConverter.matrixToDict(matrix)
+
+    for i in range(n-1,0,-1):
+        earlyPoint[i] = -50000
+        for ineq in ineqDict[i]:
+            start = ineq[0]
+            end = ineq[1]
+            constraint = ineq[2]
+
+            if i == start and (start < end or end == 0):
+                earlyPoint[i] = max(earlyPoint[end] - constraint, earlyPoint[i])
+    return earlyPoint
+
+# Given an STN and a point in that STN, calculate the radius of the 
+# inscribed sphere centered around that point
+def calcRadius(S, p):
+    # throw out the zeroeth coordinate of the point because that is 
+    # the zero timepoint and isn't part of a given schedule
+    p = p[1:]
+
+    r = Integer.MAX_VALUE
+    
+    # Loop through all the constraints and adjust r, the radius, 
+    # effectively finding the distance to the closest boundary of 
+    # the solution space for the STN
+    for inequal in S.values():
+        start = inequal[0]
+        end = inequal[1]
+        constraint = inequal[2]
+
+        temp = constraint - end + start
+        r = min(temp, r)
+    return r
+
+# Function for testing the centroid against the chebyshev center, 
+# which we initially thought is the most optimal schedule for all STNs
+def pointArena(numTrials, dim, pointOne = "cheb", pointTwo = "centro", 
+               met = "radRatio", vectWalk = False, posTime = False, 
+               manyPoints = True, randDim = False):
+    
+    if manyPoints: pointTwo = "randos"
+    oneWin = 0
+    twoWin = 0
+    oneMargin = 0
+    numoneLandslides = 0
+    numTwoLandslides = 0
+    oneMetricAvg = 0
+    twoMetricAvg = 0
+    lol = [[],[]]
+    metricMax = 0
+
+    # Run the point arena on numTrials number of STNs
+    for i in range(numTrials):
+        print "\nTrial " + str(i)
+        
+        oneAvg = 0
+        twoAvg = 0
+
+        if randDim:
+            dim = random.randint(2,10)
+
+        # generate STN with dim # of events, each constrained by 0 
+        # to upperBound
+        genstn = stnConverter.matrixToDict(test.generateRandomSTN(dim,0,20))
+        
+        # genstn = randomWalk.getInequal(randomWalk.cubestn)
+
+        # Metric for analyzing an STN depending on what we are looking for.
+        # This could be how "spherelike" the solution space is, 
+        metricVal = metricFunctions.sphericalMetric(genstn, dim, met)
+
+        # Compute the first point
+        if pointOne == "cheb":
+            sph = randomWalk.chebyshev(genstn)
+            one = sph[0]
+        elif pointOne == "centro":
+            one = centroid(genstn)
+        elif pointOne == "birdie":
+            one = earlyBird(genstn)
+
+        # Compute the second point
+        if pointTwo == "cheb":
+            sph = randomWalk.chebyshev(genstn)
+            two = sph[0]
+        elif pointTwo == "centro":
+            two = centroid(genstn)
+        elif pointTwo == "birdie":
+            two = earlyBird(genstn)
+
+        metricMax = max(metricMax, metricVal)
+        
+        lol[0].append(metricVal)
+
+        # Take the average of 100 randomWalks using 25 different points compared
+        # against point one
+        if manyPoints:
+            for i in range(25):
+                curr = simpleRandSched(genstn)
+                for i in range(100):
+                    twoAvg += randomWalk.perturb(genstn, curr, vectWalk, posTime)
+                    oneAvg += randomWalk.perturb(genstn, one, vectWalk, posTime)
+
+            twoAvg /= 2500.0
+            oneAvg /= 2500.0
+
+        # Take the average of 100 randomWalks starting at one and two
+        else:
+            for i in range(100):
+                twoAvg += randomWalk.perturb(genstn, two, vectWalk, posTime)
+                oneAvg += randomWalk.perturb(genstn, one, vectWalk, posTime)
+            twoAvg /= 100.0
+            oneAvg /= 100.0
+
+
+        print pointOne + "Average: " + str(oneAvg)
+        print pointTwo + "Average: " + str(twoAvg)
+
+        # Case where one had longer random walk
+        if oneAvg > twoAvg:
+            oneWin += 1
+            oneMetricAvg += metricVal
+
+        # Case where two had longer random walk
+        if twoAvg > oneAvg:
+            twoWin += 1
+            twoMetricAvg += metricVal
+        
+        # The margin of how much won or lost by
+        if oneAvg == 0 and twoAvg == 0:
+            oneMargin = 0
+        else:
+            # oneMargin = 2 * (oneAvg - twoAvg) / (oneAvg + twoAvg) 
+            oneMargin = twoAvg
+
+        lol[1].append(oneMargin)
+
+        print "MetricVal " + str(metricVal)
+
+    title = pointOne + "_" + pointTwo + "_"
+    title += met
+    title += "_"
+    lol.append(title)
+    lol.append(metricMax)
+    if manyPoints: title += "manyPoints"
+    else: title += "battle"
+    print pointOne + "Win " + str(oneWin)
+    print pointTwo + "Win " + str(twoWin)
+    print pointOne + "MetricAvg " + str(oneMetricAvg/(oneWin+0.000001))
+    print pointTwo + "MetricAvg " + str(twoMetricAvg/(twoWin+0.0000001))
+    with open(os.path.abspath('./Data/' + title + '.json'), 'w') as fp:
+        json.dump(lol, fp)
+    return lol
+
+
+with open(os.path.abspath('./Data/two_agent_traffic_ineq.json'), 'r') as fp:
+    datastuff = json.load(fp)
+
+newIneqDict = {}
+for key in datastuff.keys():
+    newIneqDict[int(key)] = datastuff[key]
+
+datastuff = newIneqDict
+# datastuff = test.minimal(stnConverter.dictToMatrix(datastuff))
+# print datastuff
+# print test.getRandomSchedule(datastuff)
+# print datastuff
+
+# datastuff = stnConverter.dictToMatrix(datastuff)
+
+# cheb1 = randomWalk.chebyshev(newIneqDict)[0]
+# chebb1 = [c - cheb1[0] for c in cheb1]
+# m = test.minimal(datastuff)
+
+# d = stnConverter.matrixToDict(m)
+# cheb2 = randomWalk.chebyshev(d)[0]
+# chebb2 = [c - cheb2[0] for c in cheb2]
+# print cheb1
+# print chebb1
+# print cheb2
+# print chebb1
+# print randomWalk.inSTN(newIneqDict,cheb1)
+# print randomWalk.inSTN(newIneqDict,cheb2)
+
+'''
+import sys
+ineqs = randomWalk.ineqs
+new_ineqs = {}
+for key in ineqs.keys():
+    new_ineqs[key] = []
+    for ineq in ineqs[key]:
+        if ineq[2] != float('inf'):
+            new_ineqs[key].append([ineq[0],ineq[1],ineq[2]/1000])
+print new_ineqs
+'''
+
+# Function for testing the centroid against the chebyshev center, 
+# which we initially thought is the most optimal schedule for all STNs
+def pointBrawl(numTrials, dim, manWalk = False, posTime = False, randDim = False):
+    
+    chebMargin = 0
+    centMargin = 0
+    birdMargin = 0
+    chebVCentMargin = 0
+    chebVBirdMargin = 0
+    centVBirdMargin = 0
+
+    # Matric to store all the different quantities we may want to compute in a 
+    # simulation. The numbers on the right refer to indices of the matrix
+    lol =   [[], # sphereMetric          0
+             [], # burgerMetric          1
+             [], # wilsonMetric          2
+             [], # radRatio              3
+             [], # naiveMetric           4
+             [], # chebMargin            5
+             [], # centMargin            6
+             [], # birdMargin            7
+             [], # chebVCentMargin       8
+             [], # chebVBirdMargin       9
+             [], # centVBirdMargin       10
+             [], # randomWalkCheb        11
+             [], # randomWalkCent        12
+             [], # randomWalkBird        13
+             [], # randomWalkManyPoints  14
+             [], # dimension             15
+             [], # STNs.                 16
+             ]
+
+    # Run the point arena on numTrials number of STNs
+    for i in range(numTrials):
+        print "\nTrial " + str(i)
+        chebAvg = 0
+        centAvg = 0
+        birdAvg = 0
+        randAvg = 0
+
+        # Randomly choose the dimension between 2 and 10 events
+        if randDim:
+            dim = random.randint(2,10)
+
+        # generate STN with 5 events, each constrained by 0 to upperBound
+        # genstn = stnConverter.matrixToDict(test.generateRandomSTN(dim,0,40))
+        genstn = datastuff
+        dim = len(genstn.keys()) - 1
+        print dim
+        if test.minimal(stnConverter.dictToMatrix(genstn)) == []:
+            continue
+        else:
+            genstn = stnConverter.matrixToDict(test.minimal(stnConverter.dictToMatrix(genstn)))
+        # print genstn
+
+        
+        lol[15].append(dim)
+        lol[16].append(genstn)
+        # Metrics for analyzing an STN depending on what we are looking for.
+        # This could be how "spherelike" the solution space is, 
+        sphereMet = metricFunctions.sphericalMetric(genstn, dim, "spherical")
+        burgerMet = metricFunctions.sphericalMetric(genstn, dim, "burgers")
+        wilsonMet = metricFunctions.sphericalMetric(genstn, dim, "wilson")
+        radRatio = metricFunctions.sphericalMetric(genstn, dim, "radRatio")
+        naiveMet = metricFunctions.sphericalMetric(genstn, dim, "hell")
+        
+        # if metricVal > 0.02:
+        #     continue
+
+        # Compute the possible "centers", or points we think may be optimal
+        cheb = randomWalk.chebyshev(genstn)[0]
+        cent = centroid(genstn)
+        birdie = earlyBird(genstn)
+        
+        # Append the computed metric values to their respective rows
+        lol[0].append(sphereMet)
+        lol[1].append(burgerMet)
+        lol[2].append(wilsonMet)
+        lol[3].append(radRatio)
+        lol[4].append(naiveMet)
+        
+        # Take the average of 100 randomWalks using 25 different points
+        for i in range(100):
+            curr = simpleRandSched(genstn)
+            for i in range(100):
+                randAvg += randomWalk.perturb(genstn, curr, True, posTime)
+        randAvg /= 10000.0
+
+        # Take the average of 100 randomWalks starting at each "center"
+        for i in range(100):
+            chebAvg += randomWalk.perturb(genstn, cheb, True, posTime)
+            centAvg += randomWalk.perturb(genstn, cent, True, posTime)
+            birdAvg += randomWalk.perturb(genstn, birdie, True, posTime)
+        chebAvg /= 100.0
+        centAvg /= 100.0
+        birdAvg /= 100.0
+
+        print "cheb " + "Average: " + str(chebAvg)
+        print "cent " + "Average: " + str(centAvg)
+        print "bird " + "Average: " + str(birdAvg)
+        print "rand " + "Average: " + str(randAvg)
+
+        # Compute the different margins of the centers vs each other
+        if chebAvg == 0 and centAvg == 0:
+            chebVCentMargin = 0
+        else:
+            chebVCentMargin = 2 * (chebAvg - centAvg) / (chebAvg + centAvg)
+        if chebAvg == 0 and birdAvg == 0:
+            chebVBirdMargin = 0
+        else:
+            chebVBirdMargin = 2 * (chebAvg - birdAvg) / (chebAvg + birdAvg) 
+        if centAvg == 0 and centAvg == 0:
+            centVBirdMargin = 0
+        else:
+            centVBirdMargin = 2 * (centAvg - birdAvg) / (centAvg + birdAvg) 
+
+        # Compute the different margins of the centers vs random points
+        if chebAvg == 0 and randAvg == 0:
+            chebMargin = 0
+        else:
+            chebMargin = 2 * (chebAvg - randAvg) / (chebAvg + randAvg)
+        if centAvg == 0 and randAvg == 0:
+            centMargin = 0
+        else:
+            centMargin = 2 * (centAvg - randAvg) / (centAvg + randAvg) 
+        if birdAvg == 0 and randAvg == 0:
+            birdMargin = 0
+        else:
+            birdMargin = 2 * (birdAvg - randAvg) / (birdAvg + randAvg) 
+
+        # Append the computed margins to their respective rows
+        lol[5].append(chebMargin)
+        lol[6].append(centMargin)
+        lol[7].append(birdMargin)
+        lol[8].append(chebVCentMargin)
+        lol[9].append(chebVBirdMargin)
+        lol[10].append(centVBirdMargin)
+
+        # Append the computed randomWalk lengths starting at each center to 
+        # their respective rows
+        lol[11].append(chebAvg)
+        lol[12].append(centAvg)
+        lol[13].append(birdAvg)
+        lol[14].append(randAvg)
+
+        print "SPHEERE " + str(sphereMet)
+        print "BURGERS " + str(burgerMet)
+        print "WILSOON " + str(wilsonMet)
+        print "RAAAADD " + str(radRatio)
+        print "NAIIIVE " + str(naiveMet)
+
+    title = "THE_GRAND_BATTLE_ON_"
+    if randDim:
+        title += "MANY"
+    else:
+        title += str(dim)
+    title += "_DIMENSIONS_"
+    title += "AND_" + str(numTrials) + "_MILLION_TRIALS"
+    if posTime:
+        title += "_AS_TIME_MOVES_FORWARD!"
+
+    # Code to store data in a json file
+    with open(os.path.abspath('./Data/' + title + '.json'), 'w') as fp:
+        json.dump(lol, fp)
+    
+    return lol
+
+
+num2var = {0: 'z', 1: 'a', 2: 'b', 3: 'c'}
+
+# This function takes in an inequality dictionary and prints out the 
+# format we need to input into polymake to visualize our polytope
+def printIneq(ineqDict):
+
+    polytope = '$p = new Polytope(INEQUALITIES=>['
+    n = len(ineqDict.keys())
+    for l in ineqDict.values():
+        for ineq in l:
+            start = ineq[0]
+            end = ineq[1]
+            constraint = ineq[2]
+            ineqArr = [0] * n
+
+            ineqArr[0] = constraint
+
+            for i in range(n):
+                if i != 0:
+                    if i == start:
+                        ineqArr[i] = 1
+                    if i == end:
+                        ineqArr[i] = -1
+
+            polytope += str(ineqArr) + ', '
+
+    polytope = polytope[0:-2]
+    polytope += ']);'
+
+    print polytope
+'''
+lols = []
+lols.append(pointArena(5000,5,"cheb","centro","radRatio",True,True,False))
+lols.append(pointArena(5000,5,"cheb","birdie","radRatio",True,True,False))
+lols.append(pointArena(5000,5,"birdie","centro","radRatio",True,True,False))
+lols.append(pointArena(5000,5,"cheb","centro","spherical",True,True,False))
+lols.append(pointArena(5000,5,"cheb","birdie","spherical",True,True,False))
+lols.append(pointArena(5000,5,"birdie","centro","spherical",True,True,False))
+lols.append(pointArena(1000,5,"cheb","","radRatio",True,True,True))
+lols.append(pointArena(1000,5,"centro","","radRatio",True,True,True))
+lols.append(pointArena(1000,5,"birdie","","radRatio",True,True,True))
+for lol in lols:
+    title = lol[2]
+    metricMax = lol[3]
+    plt.plot(lol[0],lol[1],'ro')
+    plt.axis([0,metricMax+0.1*metricMax,-1.0,1.2])
+    plt.suptitle(title)
+    plt.show()
+'''
+
+pointBrawl(5,0)
+# pointBrawl(2500,5,0,1,1)
+
+
+lolDict =   {0: 'sphereMetric',
+             1: 'hunsberger',
+             2: 'wilsonMetric',
+             3: 'radiusRatio',
+             4: 'naiveMetric',
+             5: 'chebMargin',
+             6: 'centroidMargin',
+             7: 'earlyBirdMargin',
+             8: 'chebVCentMargin',
+             9: 'chebVBirdMargin',
+             10: 'centVBirdMargin',
+             11: 'randomWalkLengthCheb',
+             12: 'randomWalkLengthCent',
+             13: 'randomWalkLengthBird',
+             14: 'randomWalkLengthManyPoints',
+             15: 'dimension'
+             }
+
+# # norm_huns = []
+# wils = []
+
+# for i in range(len(datastuff[0])):
+#     print "Tri_" + str(i)
+#     wil = datastuff[4][i]
+#     dim = datastuff[15][i]
+#     wils.append(wil/dim)
+
+# # with open(os.path.abspath('./Data/' + 'norm_huns' + '.json'), 'w') as fp:
+# #     json.dump(norm_huns,fp)
+
+
+
+# for x in range(2,3):
+#     for y in range(14,15):
+#         plt.plot(wils,datastuff[y],'go')
+#         plt.suptitle("THE GRAND BATTLE ON MANY DIMENSIONS!!!!!!!")
+#         plt.xlabel(lolDict[x])
+#         plt.ylabel(lolDict[y])
+#         coeffMatrix = np.corrcoef(wils, datastuff[y])
+#         print coeffMatrix[1][0]
+#         plt.show()
+'''
+x = 4
+y = 14
+
+lol2D = [[],[]]
+lol3D = [[],[]]
+lol4D = [[],[]]
+lol5D = [[],[]]
+lol6D = [[],[]]
+lol7D = [[],[]]
+lol8D = [[],[]]
+lol9D = [[],[]]
+lol10D = [[],[]]
+
+for i in range(len(lol100[15])):
+    if lol100[15][i] == 2:
+        lol2D[0].append(lol100[x][i])
+        lol2D[1].append(lol100[y][i])
+    if lol100[15][i] == 3:
+        lol3D[0].append(lol100[x][i])
+        lol3D[1].append(lol100[y][i])
+        if lol100[3][i] > 0.4142 and lol100[3][i] < 0.4143: 
+            printIneq(lol100[16][i]) 
+    if lol100[15][i] == 4:
+        lol4D[0].append(lol100[x][i])
+        lol4D[1].append(lol100[y][i])
+    if lol100[15][i] == 5:
+        lol5D[0].append(lol100[x][i])
+        lol5D[1].append(lol100[y][i])
+    if lol100[15][i] == 6:
+        lol6D[0].append(lol100[x][i])
+        lol6D[1].append(lol100[y][i])
+    if lol100[15][i] == 7:
+        lol7D[0].append(lol100[x][i])
+        lol7D[1].append(lol100[y][i])
+    if lol100[15][i] == 8:
+        lol8D[0].append(lol100[x][i])
+        lol8D[1].append(lol100[y][i])
+    if lol100[15][i] == 9:
+        lol9D[0].append(lol100[x][i])
+        lol9D[1].append(lol100[y][i])
+    if lol100[15][i] == 10:
+        lol10D[0].append(lol100[x][i])
+        lol10D[1].append(lol100[y][i])
+'''
+'''
+plt.plot(lol2D[0],lol2D[1],'go')
+plt.plot(lol3D[0],lol3D[1],'m*')
+plt.plot(lol4D[0],lol4D[1],'r^')
+plt.plot(lol5D[0],lol5D[1],'c+')
+plt.plot(lol6D[0],lol6D[1],'bo')
+plt.plot(lol7D[0],lol7D[1],'y*')
+plt.plot(lol8D[0],lol8D[1],'k^')
+plt.plot(lol9D[0],lol9D[1],'g+')
+plt.plot(lol10D[0],lol10D[1],'mo')
+
+coeffMatrix = np.corrcoef(lolPMDSTN[x], lolPMDSTN[y])
+print 'Overall Correlation: ' + str(coeffMatrix[1][0])
+
+coeffMatrix = np.corrcoef(lol2D[0], lol2D[1])
+print '2D Correlation: ' + str(coeffMatrix[1][0])
+
+coeffMatrix = np.corrcoef(lol3D[0], lol3D[1])
+print '3D Correlation: ' + str(coeffMatrix[1][0])
+
+coeffMatrix = np.corrcoef(lol4D[0], lol4D[1])
+print '4D Correlation: ' + str(coeffMatrix[1][0])
+
+coeffMatrix = np.corrcoef(lol5D[0], lol5D[1])
+print '5D Correlation: ' + str(coeffMatrix[1][0])
+
+coeffMatrix = np.corrcoef(lol6D[0], lol6D[1])
+print '6D Correlation: ' + str(coeffMatrix[1][0])
+
+coeffMatrix = np.corrcoef(lol7D[0], lol7D[1])
+print '7D Correlation: ' + str(coeffMatrix[1][0])
+
+coeffMatrix = np.corrcoef(lol8D[0], lol8D[1])
+print '8D Correlation: ' + str(coeffMatrix[1][0])
+
+coeffMatrix = np.corrcoef(lol9D[0], lol9D[1])
+print '9D Correlation: ' + str(coeffMatrix[1][0])
+
+coeffMatrix = np.corrcoef(lol10D[0], lol10D[1])
+print '10D Correlation: ' + str(coeffMatrix[1][0])
+
+plt.suptitle("THE GRAND BATTLE ON MANY DIMENSIONS!!!!!!!")
+plt.xlabel(lolDict[x])
+plt.ylabel(lolDict[y])
+plt.show()
+
+'''
+# lol = pointArena(50,5,"centro","","spherical",True,True,True,True)
+# title = lol[2]
+# metricMax = lol[3]
+# plt.plot(lol[0],lol[1],'ro')
+# #plt.axis([0,metricMax+0.1*metricMax,-2.5,2.5])
+# plt.suptitle(title)
+# plt.show()
+
+'''
+lol = pointArena(50,5,"centro","","wilson",True,True,True)
+title = lol[2]
+metricMax = lol[3]
+plt.plot(lol[0],lol[1],'ro')
+#plt.axis([0,metricMax+0.1*metricMax,-2.5,2.5])
+plt.suptitle(title)
+plt.show()
+'''
+# printIneq(randSTN
+# viewRandomWalk(1, 3)
+# printIneq(randomWalk.getInequal(randomWalk.cubestn))
+# print centroid(randomWalk.getInequal(randomWalk.cubestn))
+# print randomWalk.chebyshev(randomWalk.getInequal(randomWalk.cubestn))
+
+

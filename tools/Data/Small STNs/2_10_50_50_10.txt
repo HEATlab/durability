@@ -1,0 +1,870 @@
+c In this file, the DIMACS format is extended by allowing arcs of infinite weight.
+c These are specified by "a U V inf", where U and V are vertex IDs.
+c 41 vertex labels follow:
+c <label>     1 0_0_ST
+c <label>     2 0_0_ET
+c <label>     3 0_1_ST
+c <label>     4 0_1_ET
+c <label>     5 0_2_ST
+c <label>     6 0_2_ET
+c <label>     7 0_3_ST
+c <label>     8 0_3_ET
+c <label>     9 0_4_ST
+c <label>    10 0_4_ET
+c <label>    11 0_5_ST
+c <label>    12 0_5_ET
+c <label>    13 0_6_ST
+c <label>    14 0_6_ET
+c <label>    15 0_7_ST
+c <label>    16 0_7_ET
+c <label>    17 0_8_ST
+c <label>    18 0_8_ET
+c <label>    19 0_9_ST
+c <label>    20 0_9_ET
+c <label>    21 1_0_ST
+c <label>    22 1_0_ET
+c <label>    23 1_1_ST
+c <label>    24 1_1_ET
+c <label>    25 1_2_ST
+c <label>    26 1_2_ET
+c <label>    27 1_3_ST
+c <label>    28 1_3_ET
+c <label>    29 1_4_ST
+c <label>    30 1_4_ET
+c <label>    31 1_5_ST
+c <label>    32 1_5_ET
+c <label>    33 1_6_ST
+c <label>    34 1_6_ET
+c <label>    35 1_7_ST
+c <label>    36 1_7_ET
+c <label>    37 1_8_ST
+c <label>    38 1_8_ET
+c <label>    39 1_9_ST
+c <label>    40 1_9_ET
+c <label>    41 z
+c --------------------------
+c following is multiagent data.
+c "c <num_agents> A" specifies that the problem has A agents.
+c "c <own> A L" specifies that the agent with id A owns the vertex with label L.
+c Agent id is 0-based.  The value -1 indicates a shared vertex.
+c <num_agents> 3
+c <own> 0 0_0_ST
+c <own> 0 0_0_ET
+c <own> 0 0_1_ST
+c <own> 0 0_1_ET
+c <own> 0 0_2_ST
+c <own> 0 0_2_ET
+c <own> 0 0_3_ST
+c <own> 0 0_3_ET
+c <own> 0 0_4_ST
+c <own> 0 0_4_ET
+c <own> 0 0_5_ST
+c <own> 0 0_5_ET
+c <own> 0 0_6_ST
+c <own> 0 0_6_ET
+c <own> 0 0_7_ST
+c <own> 0 0_7_ET
+c <own> 0 0_8_ST
+c <own> 0 0_8_ET
+c <own> 0 0_9_ST
+c <own> 0 0_9_ET
+c <own> 1 1_0_ST
+c <own> 1 1_0_ET
+c <own> 1 1_1_ST
+c <own> 1 1_1_ET
+c <own> 1 1_2_ST
+c <own> 1 1_2_ET
+c <own> 1 1_3_ST
+c <own> 1 1_3_ET
+c <own> 1 1_4_ST
+c <own> 1 1_4_ET
+c <own> 1 1_5_ST
+c <own> 1 1_5_ET
+c <own> 1 1_6_ST
+c <own> 1 1_6_ET
+c <own> 1 1_7_ST
+c <own> 1 1_7_ET
+c <own> 1 1_8_ST
+c <own> 1 1_8_ET
+c <own> 1 1_9_ST
+c <own> 1 1_9_ET
+c <own> 2 z
+c --------------------------
+c END OF HEADER; problem line and arc data follow
+p sp 41 560
+a 1 2 inf
+a 2 1 inf
+a 1 3 inf
+a 3 1 inf
+a 1 5 inf
+a 5 1 inf
+a 1 7 inf
+a 7 1 inf
+a 1 9 inf
+a 9 1 inf
+a 1 13 inf
+a 13 1 inf
+a 1 15 inf
+a 15 1 inf
+a 1 17 inf
+a 17 1 inf
+a 1 41 inf
+a 41 1 inf
+a 2 3 inf
+a 3 2 inf
+a 2 5 inf
+a 5 2 inf
+a 2 7 inf
+a 7 2 inf
+a 2 9 inf
+a 9 2 inf
+a 2 13 inf
+a 13 2 inf
+a 2 15 inf
+a 15 2 inf
+a 2 16 inf
+a 16 2 inf
+a 2 17 inf
+a 17 2 inf
+a 2 19 inf
+a 19 2 inf
+a 2 21 inf
+a 21 2 inf
+a 2 29 inf
+a 29 2 inf
+a 2 35 inf
+a 35 2 inf
+a 2 37 inf
+a 37 2 inf
+a 2 41 inf
+a 41 2 inf
+a 3 4 inf
+a 4 3 inf
+a 3 5 inf
+a 5 3 inf
+a 3 7 inf
+a 7 3 inf
+a 3 8 inf
+a 8 3 inf
+a 3 9 inf
+a 9 3 inf
+a 3 10 inf
+a 10 3 inf
+a 3 13 inf
+a 13 3 inf
+a 3 14 inf
+a 14 3 inf
+a 3 15 inf
+a 15 3 inf
+a 3 16 inf
+a 16 3 inf
+a 3 17 inf
+a 17 3 inf
+a 3 18 inf
+a 18 3 inf
+a 3 19 inf
+a 19 3 inf
+a 3 21 inf
+a 21 3 inf
+a 3 23 inf
+a 23 3 inf
+a 3 25 inf
+a 25 3 inf
+a 3 29 inf
+a 29 3 inf
+a 3 30 inf
+a 30 3 inf
+a 3 31 inf
+a 31 3 inf
+a 3 32 inf
+a 32 3 inf
+a 3 33 inf
+a 33 3 inf
+a 3 35 inf
+a 35 3 inf
+a 3 37 inf
+a 37 3 inf
+a 3 39 inf
+a 39 3 inf
+a 3 41 inf
+a 41 3 inf
+a 4 23 inf
+a 23 4 inf
+a 4 37 inf
+a 37 4 inf
+a 4 41 inf
+a 41 4 inf
+a 5 6 inf
+a 6 5 inf
+a 5 7 inf
+a 7 5 inf
+a 5 9 inf
+a 9 5 inf
+a 5 11 inf
+a 11 5 inf
+a 5 13 inf
+a 13 5 inf
+a 5 14 inf
+a 14 5 inf
+a 5 15 inf
+a 15 5 inf
+a 5 16 inf
+a 16 5 inf
+a 5 17 inf
+a 17 5 inf
+a 5 19 inf
+a 19 5 inf
+a 5 21 inf
+a 21 5 inf
+a 5 23 inf
+a 23 5 inf
+a 5 25 inf
+a 25 5 inf
+a 5 29 inf
+a 29 5 inf
+a 5 33 inf
+a 33 5 inf
+a 5 35 inf
+a 35 5 inf
+a 5 37 inf
+a 37 5 inf
+a 5 39 inf
+a 39 5 inf
+a 5 41 inf
+a 41 5 inf
+a 6 7 inf
+a 7 6 inf
+a 6 21 inf
+a 21 6 inf
+a 6 35 inf
+a 35 6 inf
+a 6 37 inf
+a 37 6 inf
+a 6 39 inf
+a 39 6 inf
+a 6 40 inf
+a 40 6 inf
+a 6 41 inf
+a 41 6 inf
+a 7 8 inf
+a 8 7 inf
+a 7 9 inf
+a 9 7 inf
+a 7 10 inf
+a 10 7 inf
+a 7 13 inf
+a 13 7 inf
+a 7 14 inf
+a 14 7 inf
+a 7 15 inf
+a 15 7 inf
+a 7 16 inf
+a 16 7 inf
+a 7 17 inf
+a 17 7 inf
+a 7 18 inf
+a 18 7 inf
+a 7 19 inf
+a 19 7 inf
+a 7 21 inf
+a 21 7 inf
+a 7 23 inf
+a 23 7 inf
+a 7 25 inf
+a 25 7 inf
+a 7 27 inf
+a 27 7 inf
+a 7 28 inf
+a 28 7 inf
+a 7 29 inf
+a 29 7 inf
+a 7 31 inf
+a 31 7 inf
+a 7 35 inf
+a 35 7 inf
+a 7 37 inf
+a 37 7 inf
+a 7 39 inf
+a 39 7 inf
+a 7 40 inf
+a 40 7 inf
+a 7 41 inf
+a 41 7 inf
+a 8 10 inf
+a 10 8 inf
+a 8 14 inf
+a 14 8 inf
+a 8 18 inf
+a 18 8 inf
+a 8 29 inf
+a 29 8 inf
+a 8 31 inf
+a 31 8 inf
+a 8 35 inf
+a 35 8 inf
+a 8 39 inf
+a 39 8 inf
+a 8 41 inf
+a 41 8 inf
+a 9 10 inf
+a 10 9 inf
+a 9 11 inf
+a 11 9 inf
+a 9 13 inf
+a 13 9 inf
+a 9 14 inf
+a 14 9 inf
+a 9 15 inf
+a 15 9 inf
+a 9 16 inf
+a 16 9 inf
+a 9 17 inf
+a 17 9 inf
+a 9 18 inf
+a 18 9 inf
+a 9 19 inf
+a 19 9 inf
+a 9 21 inf
+a 21 9 inf
+a 9 22 inf
+a 22 9 inf
+a 9 23 inf
+a 23 9 inf
+a 9 25 inf
+a 25 9 inf
+a 9 29 inf
+a 29 9 inf
+a 9 35 inf
+a 35 9 inf
+a 9 37 inf
+a 37 9 inf
+a 9 39 inf
+a 39 9 inf
+a 9 41 inf
+a 41 9 inf
+a 10 14 inf
+a 14 10 inf
+a 10 18 inf
+a 18 10 inf
+a 10 29 inf
+a 29 10 inf
+a 10 31 inf
+a 31 10 inf
+a 10 35 inf
+a 35 10 inf
+a 10 39 inf
+a 39 10 inf
+a 10 41 inf
+a 41 10 inf
+a 11 12 inf
+a 12 11 inf
+a 11 13 inf
+a 13 11 inf
+a 11 19 inf
+a 19 11 inf
+a 11 21 inf
+a 21 11 inf
+a 11 29 inf
+a 29 11 inf
+a 11 41 inf
+a 41 11 inf
+a 12 41 inf
+a 41 12 inf
+a 13 14 inf
+a 14 13 inf
+a 13 15 inf
+a 15 13 inf
+a 13 16 inf
+a 16 13 inf
+a 13 17 inf
+a 17 13 inf
+a 13 19 inf
+a 19 13 inf
+a 13 21 inf
+a 21 13 inf
+a 13 23 inf
+a 23 13 inf
+a 13 24 inf
+a 24 13 inf
+a 13 29 inf
+a 29 13 inf
+a 13 35 inf
+a 35 13 inf
+a 13 37 inf
+a 37 13 inf
+a 13 38 inf
+a 38 13 inf
+a 13 39 inf
+a 39 13 inf
+a 13 41 inf
+a 41 13 inf
+a 14 16 inf
+a 16 14 inf
+a 14 17 inf
+a 17 14 inf
+a 14 18 inf
+a 18 14 inf
+a 14 19 inf
+a 19 14 inf
+a 14 21 inf
+a 21 14 inf
+a 14 23 inf
+a 23 14 inf
+a 14 25 inf
+a 25 14 inf
+a 14 29 inf
+a 29 14 inf
+a 14 31 inf
+a 31 14 inf
+a 14 35 inf
+a 35 14 inf
+a 14 37 inf
+a 37 14 inf
+a 14 39 inf
+a 39 14 inf
+a 14 41 inf
+a 41 14 inf
+a 15 16 inf
+a 16 15 inf
+a 15 17 inf
+a 17 15 inf
+a 15 19 inf
+a 19 15 inf
+a 15 41 inf
+a 41 15 inf
+a 16 17 inf
+a 17 16 inf
+a 16 19 inf
+a 19 16 inf
+a 16 21 inf
+a 21 16 inf
+a 16 23 inf
+a 23 16 inf
+a 16 24 inf
+a 24 16 inf
+a 16 25 inf
+a 25 16 inf
+a 16 27 inf
+a 27 16 inf
+a 16 29 inf
+a 29 16 inf
+a 16 35 inf
+a 35 16 inf
+a 16 37 inf
+a 37 16 inf
+a 16 39 inf
+a 39 16 inf
+a 16 41 inf
+a 41 16 inf
+a 17 18 inf
+a 18 17 inf
+a 17 19 inf
+a 19 17 inf
+a 17 21 inf
+a 21 17 inf
+a 17 23 inf
+a 23 17 inf
+a 17 25 inf
+a 25 17 inf
+a 17 29 inf
+a 29 17 inf
+a 17 35 inf
+a 35 17 inf
+a 17 37 inf
+a 37 17 inf
+a 17 39 inf
+a 39 17 inf
+a 17 41 inf
+a 41 17 inf
+a 18 29 inf
+a 29 18 inf
+a 18 31 inf
+a 31 18 inf
+a 18 32 inf
+a 32 18 inf
+a 18 35 inf
+a 35 18 inf
+a 18 39 inf
+a 39 18 inf
+a 18 41 inf
+a 41 18 inf
+a 19 20 inf
+a 20 19 inf
+a 19 21 inf
+a 21 19 inf
+a 19 23 inf
+a 23 19 inf
+a 19 25 inf
+a 25 19 inf
+a 19 27 inf
+a 27 19 inf
+a 19 29 inf
+a 29 19 inf
+a 19 30 inf
+a 30 19 inf
+a 19 35 inf
+a 35 19 inf
+a 19 37 inf
+a 37 19 inf
+a 19 39 inf
+a 39 19 inf
+a 19 41 inf
+a 41 19 inf
+a 20 23 inf
+a 23 20 inf
+a 20 27 inf
+a 27 20 inf
+a 20 35 inf
+a 35 20 inf
+a 20 41 inf
+a 41 20 inf
+a 21 22 inf
+a 22 21 inf
+a 21 23 inf
+a 23 21 inf
+a 21 25 inf
+a 25 21 inf
+a 21 27 inf
+a 27 21 inf
+a 21 29 inf
+a 29 21 inf
+a 21 33 inf
+a 33 21 inf
+a 21 35 inf
+a 35 21 inf
+a 21 37 inf
+a 37 21 inf
+a 21 39 inf
+a 39 21 inf
+a 21 41 inf
+a 41 21 inf
+a 22 41 inf
+a 41 22 inf
+a 23 24 inf
+a 24 23 inf
+a 23 25 inf
+a 25 23 inf
+a 23 27 inf
+a 27 23 inf
+a 23 29 inf
+a 29 23 inf
+a 23 33 inf
+a 33 23 inf
+a 23 35 inf
+a 35 23 inf
+a 23 37 inf
+a 37 23 inf
+a 23 39 inf
+a 39 23 inf
+a 23 41 inf
+a 41 23 inf
+a 24 41 inf
+a 41 24 inf
+a 25 26 inf
+a 26 25 inf
+a 25 27 inf
+a 27 25 inf
+a 25 29 inf
+a 29 25 inf
+a 25 33 inf
+a 33 25 inf
+a 25 35 inf
+a 35 25 inf
+a 25 37 inf
+a 37 25 inf
+a 25 39 inf
+a 39 25 inf
+a 25 41 inf
+a 41 25 inf
+a 26 41 inf
+a 41 26 inf
+a 27 28 inf
+a 28 27 inf
+a 27 29 inf
+a 29 27 inf
+a 27 35 inf
+a 35 27 inf
+a 27 37 inf
+a 37 27 inf
+a 27 39 inf
+a 39 27 inf
+a 27 41 inf
+a 41 27 inf
+a 28 41 inf
+a 41 28 inf
+a 29 30 inf
+a 30 29 inf
+a 29 31 inf
+a 31 29 inf
+a 29 33 inf
+a 33 29 inf
+a 29 35 inf
+a 35 29 inf
+a 29 37 inf
+a 37 29 inf
+a 29 39 inf
+a 39 29 inf
+a 29 41 inf
+a 41 29 inf
+a 30 41 inf
+a 41 30 inf
+a 31 32 inf
+a 32 31 inf
+a 31 35 inf
+a 35 31 inf
+a 31 39 inf
+a 39 31 inf
+a 31 41 inf
+a 41 31 inf
+a 32 41 inf
+a 41 32 inf
+a 33 34 inf
+a 34 33 inf
+a 33 35 inf
+a 35 33 inf
+a 33 37 inf
+a 37 33 inf
+a 33 41 inf
+a 41 33 inf
+a 34 41 inf
+a 41 34 inf
+a 35 36 inf
+a 36 35 inf
+a 35 37 inf
+a 37 35 inf
+a 35 39 inf
+a 39 35 inf
+a 35 41 inf
+a 41 35 inf
+a 36 41 inf
+a 41 36 inf
+a 37 38 inf
+a 38 37 inf
+a 37 39 inf
+a 39 37 inf
+a 37 41 inf
+a 41 37 inf
+a 38 41 inf
+a 41 38 inf
+a 39 40 inf
+a 40 39 inf
+a 39 41 inf
+a 41 39 inf
+a 40 41 inf
+a 41 40 inf
+c END OF PROBLEM DATA; additional refinment constraints follow.
+c "c <num_refinements> X" specifies that the problem has X additional refinement constraints.
+c "c <refine>" specifies each arc that should be considered a refinement constraint.
+c <num_refinements> 211
+c <refine> 1 2 -51
+c <refine> 2 1 92
+c <refine> 1 3 413
+c <refine> 5 1 490
+c <refine> 1 7 221
+c <refine> 9 1 334
+c <refine> 13 1 328
+c <refine> 15 1 150
+c <refine> 1 17 416
+c <refine> 17 1 255
+c <refine> 41 1 0
+c <refine> 2 21 430
+c <refine> 29 2 487
+c <refine> 2 35 387
+c <refine> 2 37 563
+c <refine> 2 41 600
+c <refine> 3 4 -16
+c <refine> 4 3 39
+c <refine> 3 5 558
+c <refine> 5 3 232
+c <refine> 7 3 497
+c <refine> 3 13 423
+c <refine> 3 19 510
+c <refine> 19 3 424
+c <refine> 3 25 368
+c <refine> 3 30 286
+c <refine> 3 32 224
+c <refine> 3 33 332
+c <refine> 41 3 0
+c <refine> 23 4 256
+c <refine> 37 4 300
+c <refine> 4 41 600
+c <refine> 5 6 -22
+c <refine> 6 5 60
+c <refine> 5 11 418
+c <refine> 11 5 327
+c <refine> 5 15 498
+c <refine> 5 17 282
+c <refine> 5 23 277
+c <refine> 5 33 562
+c <refine> 5 37 373
+c <refine> 41 5 0
+c <refine> 21 6 433
+c <refine> 6 35 426
+c <refine> 37 6 310
+c <refine> 40 6 277
+c <refine> 6 41 600
+c <refine> 7 8 -15
+c <refine> 8 7 54
+c <refine> 7 9 201
+c <refine> 9 7 362
+c <refine> 7 13 380
+c <refine> 13 7 344
+c <refine> 7 15 238
+c <refine> 17 7 516
+c <refine> 7 19 420
+c <refine> 7 23 426
+c <refine> 27 7 372
+c <refine> 28 7 583
+c <refine> 7 29 463
+c <refine> 29 7 552
+c <refine> 7 31 176
+c <refine> 40 7 344
+c <refine> 41 7 0
+c <refine> 8 31 280
+c <refine> 8 41 600
+c <refine> 9 10 -57
+c <refine> 10 9 57
+c <refine> 9 11 322
+c <refine> 9 13 336
+c <refine> 13 9 495
+c <refine> 9 15 261
+c <refine> 9 17 512
+c <refine> 9 19 497
+c <refine> 9 22 328
+c <refine> 9 25 481
+c <refine> 37 9 568
+c <refine> 41 9 0
+c <refine> 29 10 405
+c <refine> 10 31 551
+c <refine> 39 10 334
+c <refine> 10 41 600
+c <refine> 11 12 -49
+c <refine> 12 11 55
+c <refine> 13 11 486
+c <refine> 19 11 266
+c <refine> 11 21 471
+c <refine> 29 11 411
+c <refine> 41 11 0
+c <refine> 12 41 600
+c <refine> 13 14 -51
+c <refine> 14 13 58
+c <refine> 13 15 317
+c <refine> 17 13 306
+c <refine> 19 13 479
+c <refine> 13 24 462
+c <refine> 13 37 38
+c <refine> 13 38 219
+c <refine> 41 13 0
+c <refine> 14 25 564
+c <refine> 31 14 436
+c <refine> 14 41 600
+c <refine> 15 16 -10
+c <refine> 16 15 45
+c <refine> 17 15 520
+c <refine> 15 19 -33
+c <refine> 41 15 0
+c <refine> 24 16 556
+c <refine> 16 27 381
+c <refine> 27 16 306
+c <refine> 16 41 600
+c <refine> 17 18 -28
+c <refine> 18 17 55
+c <refine> 17 19 392
+c <refine> 19 17 419
+c <refine> 25 17 483
+c <refine> 17 35 330
+c <refine> 39 17 564
+c <refine> 41 17 0
+c <refine> 32 18 306
+c <refine> 18 41 600
+c <refine> 19 20 -40
+c <refine> 20 19 43
+c <refine> 19 25 429
+c <refine> 30 19 467
+c <refine> 41 19 0
+c <refine> 20 23 384
+c <refine> 20 27 547
+c <refine> 20 35 382
+c <refine> 20 41 600
+c <refine> 21 22 -55
+c <refine> 22 21 103
+c <refine> 21 23 250
+c <refine> 25 21 338
+c <refine> 21 27 444
+c <refine> 21 29 282
+c <refine> 29 21 489
+c <refine> 21 33 374
+c <refine> 21 35 443
+c <refine> 35 21 503
+c <refine> 21 39 523
+c <refine> 39 21 333
+c <refine> 41 21 0
+c <refine> 22 41 600
+c <refine> 23 24 -35
+c <refine> 24 23 84
+c <refine> 23 25 560
+c <refine> 23 27 294
+c <refine> 27 23 363
+c <refine> 23 33 321
+c <refine> 23 37 367
+c <refine> 41 23 0
+c <refine> 24 41 600
+c <refine> 25 26 -35
+c <refine> 26 25 82
+c <refine> 27 25 216
+c <refine> 25 29 264
+c <refine> 29 25 461
+c <refine> 25 33 492
+c <refine> 33 25 330
+c <refine> 25 35 149
+c <refine> 25 37 366
+c <refine> 37 25 513
+c <refine> 41 25 0
+c <refine> 26 41 600
+c <refine> 27 28 -54
+c <refine> 28 27 59
+c <refine> 27 29 337
+c <refine> 29 27 509
+c <refine> 27 37 361
+c <refine> 37 27 492
+c <refine> 27 39 244
+c <refine> 41 27 0
+c <refine> 28 41 600
+c <refine> 29 30 -22
+c <refine> 30 29 66
+c <refine> 29 31 373
+c <refine> 31 29 140
+c <refine> 29 33 284
+c <refine> 33 29 449
+c <refine> 35 29 588
+c <refine> 41 29 0
+c <refine> 30 41 600
+c <refine> 31 32 -33
+c <refine> 32 31 60
+c <refine> 31 35 359
+c <refine> 31 39 244
+c <refine> 41 31 0
+c <refine> 32 41 600
+c <refine> 33 34 -1
+c <refine> 34 33 17
+c <refine> 33 35 302
+c <refine> 33 37 169
+c <refine> 37 33 353
+c <refine> 41 33 0
+c <refine> 34 41 600
+c <refine> 35 36 -8
+c <refine> 36 35 17
+c <refine> 35 37 488
+c <refine> 39 35 298
+c <refine> 41 35 0
+c <refine> 36 41 600
+c <refine> 37 38 -31
+c <refine> 38 37 35
+c <refine> 39 37 444
+c <refine> 41 37 0
+c <refine> 38 41 600
+c <refine> 39 40 -29
+c <refine> 40 39 61
+c <refine> 41 39 0
+c <refine> 40 41 600
+c --------------------------
