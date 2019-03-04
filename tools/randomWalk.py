@@ -228,7 +228,3 @@ for i in range(1, 3):
     trianglestn.addEdge(0, i, 0, 10)
 trianglestn.addEdge(1, 2, 0, 10)
 
-# cubestn.addEdge(0, 1, 0, 20)
-# cubestn.addEdge(0, 2, 0, 1000000050)
-# cubestn.addEdge(0, 3, 0, 1000000070)
-
