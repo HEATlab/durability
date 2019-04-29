@@ -1,1 +1,2 @@
-# Acrobotics
+# Durability
+This repository hosts a collection of programs written by team *Acrobotics* (part of the Summer 2018 HEATlab group). This work resulted in a publication at the 29th International Conference of Automated Planning and Scheduling (ICAPS-19) titled *"Measuring and Optimizing Durability against Scheduling Disturbances"*.  A pre-print is available [here](https://www.cs.hmc.edu/HEAT/papers/Lee_et_al_ICAPS_2019.pdf).
